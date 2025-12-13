@@ -22,3 +22,28 @@ jobs:
               pull_number: context.payload.pull_request.number,
               merge_method: 'squash'
             });
+
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Generate README
+        run: |
+          echo "# Collection of memes" > README.md
+          echo "" >> README.md
+          echo "https://camilleislasse.github.io/memes" >> README.md
+          echo "" >> README.md
+          for img in memes/*.{png,jpg,jpeg,gif,webp}; do
+            if [ -f "$img" ]; then
+              echo "<img src=\"$img\" width=\"300\">" >> README.md
+              echo "" >> README.md
+            fi
+          done
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add README.md
+          git diff --quiet && git diff --staged --quiet || git commit -m "update readme"
+          git push
