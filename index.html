@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Memes</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div id="config" class="config hidden">
+            <h3>Configuration</h3>
+            <input type="text" id="github-token" placeholder="GitHub Token (avec repo scope)">
+            <button onclick="saveConfig()">Sauvegarder</button>
+        </div>
+        <button id="config-btn" onclick="toggleConfig()">Config</button>
+
+        <div id="drop-zone" class="drop-zone">
+            <p>Déposer un fichier</p>
+            <input type="file" id="file-input" accept="image/*" hidden>
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <h2>Galerie</h2>
+        <div id="gallery" class="gallery"></div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const status = document.getElementById('status');
+        const gallery = document.getElementById('gallery');
+        const configDiv = document.getElementById('config');
+        const REPO = 'camilleislasse/memes';
+
+        function toggleConfig() {
+            configDiv.classList.toggle('hidden');
+        }
+
+        function saveConfig() {
+            const token = document.getElementById('github-token').value;
+            if (token) {
+                localStorage.setItem('gh-token', token);
+                configDiv.classList.add('hidden');
+                showStatus('Config sauvegardée !', 'success');
+                loadGallery();
+            }
+        }
+
+        function getConfig() {
+            return {
+                token: localStorage.getItem('gh-token'),
+                repo: REPO
+            };
+        }
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                uploadMeme(file);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) uploadMeme(file);
+        });
+
+        async function uploadMeme(file) {
+            const { token, repo } = getConfig();
+            if (!token || !repo) {
+                showStatus('Configure ton token GitHub d\'abord !', 'error');
+                toggleConfig();
+                return;
+            }
+
+            showStatus('Upload en cours...', 'info');
+
+            try {
+                const base64 = await fileToBase64(file);
+                const content = base64.split(',')[1];
+                const timestamp = Date.now();
+                const ext = file.name.split('.').pop() || 'jpg';
+                const filename = `meme-${timestamp}.${ext}`;
+                const branchName = `meme-${timestamp}`;
+
+                const mainRef = await githubApi(`/repos/${repo}/git/ref/heads/main`, 'GET', null, token);
+                const mainSha = mainRef.object.sha;
+
+                await githubApi(`/repos/${repo}/git/refs`, 'POST', {
+                    ref: `refs/heads/${branchName}`,
+                    sha: mainSha
+                }, token);
+
+                await githubApi(`/repos/${repo}/contents/memes/${filename}`, 'PUT', {
+                    message: `Add ${filename}`,
+                    content: content,
+                    branch: branchName
+                }, token);
+
+                const pr = await githubApi(`/repos/${repo}/pulls`, 'POST', {
+                    title: `Add meme: ${filename}`,
+                    head: branchName,
+                    base: 'main',
+                    body: `Nouveau meme ajouté via le formulaire web.`
+                }, token);
+
+                showStatus(`PR créée ! <a href="${pr.html_url}" target="_blank">Voir la PR</a>`, 'success');
+
+            } catch (error) {
+                console.error(error);
+                showStatus(`Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        async function githubApi(endpoint, method, body, token) {
+            const res = await fetch(`https://api.github.com${endpoint}`, {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                body: body ? JSON.stringify(body) : null
+            });
+
+            if (!res.ok) {
+                const error = await res.json();
+                throw new Error(error.message || 'GitHub API error');
+            }
+            return res.json();
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function showStatus(message, type) {
+            status.innerHTML = message;
+            status.className = `status ${type}`;
+        }
+
+        async function loadGallery() {
+            const { token, repo } = getConfig();
+            if (!token || !repo) return;
+
+            try {
+                const contents = await githubApi(`/repos/${repo}/contents/memes`, 'GET', null, token);
+                gallery.innerHTML = '';
+
+                for (const file of contents) {
+                    if (file.type === 'file' && /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name)) {
+                        const img = document.createElement('img');
+                        img.src = file.download_url;
+                        img.alt = file.name;
+                        img.loading = 'lazy';
+                        gallery.appendChild(img);
+                    }
+                }
+            } catch (error) {
+                console.log('Galerie vide ou erreur:', error.message);
+            }
+        }
+
+        loadGallery();
+    </script>
+</body>
+</html>
