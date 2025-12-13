@@ -14,11 +14,8 @@
             <button onclick="saveConfig()">Sauvegarder</button>
         </div>
         <button id="config-btn" onclick="toggleConfig()">Config</button>
-
-        <div id="drop-zone" class="drop-zone">
-            <p>Déposer un fichier</p>
-            <input type="file" id="file-input" accept="image/*" hidden>
-        </div>
+        <button id="upload-btn">Upload</button>
+        <input type="file" id="file-input" accept="image/*" hidden>
 
         <div id="status" class="status"></div>
 
@@ -27,8 +24,8 @@
     </div>
 
     <script>
-        const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('file-input');
+        const uploadBtn = document.getElementById('upload-btn');
         const status = document.getElementById('status');
         const gallery = document.getElementById('gallery');
         const configDiv = document.getElementById('config');
@@ -55,25 +52,7 @@
             };
         }
 
-        dropZone.addEventListener('click', () => fileInput.click());
-
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('dragover');
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('dragover');
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('image/')) {
-                uploadMeme(file);
-            }
-        });
+        uploadBtn.addEventListener('click', () => fileInput.click());
 
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];

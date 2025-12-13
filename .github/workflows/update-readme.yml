@@ -1,0 +1,33 @@
+name: Update README
+
+on:
+  push:
+    branches: [main]
+    paths: ['memes/**']
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate README
+        run: |
+          echo "# Collection of memes" > README.md
+          echo "" >> README.md
+          echo "https://camilleislasse.github.io/memes" >> README.md
+          echo "" >> README.md
+          for img in memes/*.{png,jpg,jpeg,gif,webp}; do
+            if [ -f "$img" ]; then
+              echo "<img src=\"$img\" width=\"300\">" >> README.md
+              echo "" >> README.md
+            fi
+          done
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add README.md
+          git diff --quiet && git diff --staged --quiet || git commit -m "update readme"
+          git push
