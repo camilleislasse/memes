@@ -98,7 +98,7 @@
                     body: `Nouveau meme ajouté via le formulaire web.`
                 }, token);
 
-                showStatus(`PR créée ! <a href="${pr.html_url}" target="_blank">Voir la PR</a>`, 'success');
+                showStatus(`PR créée ! <a href="${pr.html_url}" target="_blank">Voir la PR</a> (auto-merge en cours...)`, 'success');
 
             } catch (error) {
                 console.error(error);
