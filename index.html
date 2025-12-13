@@ -160,11 +160,10 @@
         }
 
         async function loadGallery() {
-            const { token, repo } = getConfig();
-            if (!token || !repo) return;
-
             try {
-                const contents = await githubApi(`/repos/${repo}/contents/memes`, 'GET', null, token);
+                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/memes`);
+                if (!res.ok) return;
+                const contents = await res.json();
                 gallery.innerHTML = '';
 
                 for (const file of contents) {
