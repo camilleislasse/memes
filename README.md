@@ -18,5 +18,7 @@ https://camilleislasse.github.io/memes
 
 <img src="memes/meme-1765711756750.png" width="300">
 
+<img src="memes/meme-1765711772815.png" width="300">
+
 <img src="memes/meme-1765627818137.jpeg" width="300">
 
