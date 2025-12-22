@@ -26,5 +26,7 @@ https://camilleislasse.github.io/memes
 
 <img src="memes/meme-1766386672242.png" width="300">
 
+<img src="memes/meme-1766386683921.png" width="300">
+
 <img src="memes/meme-1765627818137.jpeg" width="300">
 
