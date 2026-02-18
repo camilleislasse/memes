@@ -44,5 +44,7 @@ https://camilleislasse.github.io/memes
 
 <img src="memes/meme-1769499565606.png" width="300">
 
+<img src="memes/meme-1771399250188.png" width="300">
+
 <img src="memes/meme-1765627818137.jpeg" width="300">
 
