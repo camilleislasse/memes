@@ -1,54 +1,12 @@
-# Collection of memes
+# Memes
+
+Memes that make me laugh. Not always to be taken seriously. When I like one, I save it here.
+
+Want to add a meme? Here's how:
+
+1. Fork this repo
+2. Add your image in the `memes/` folder (png, jpg, gif, webp)
+3. Open a Pull Request
+4. I'll review and merge it
 
 https://camilleislasse.github.io/memes
-
-<img src="memes/meme-1765625310340.png" width="300">
-
-<img src="memes/meme-1765628121431.png" width="300">
-
-<img src="memes/meme-1765645793004.png" width="300">
-
-<img src="memes/meme-1765645803368.png" width="300">
-
-<img src="memes/meme-1765657568197.png" width="300">
-
-<img src="memes/meme-1765657594709.png" width="300">
-
-<img src="memes/meme-1765711726958.png" width="300">
-
-<img src="memes/meme-1765711756750.png" width="300">
-
-<img src="memes/meme-1765711772815.png" width="300">
-
-<img src="memes/meme-1765785542209.png" width="300">
-
-<img src="memes/meme-1765958155234.png" width="300">
-
-<img src="memes/meme-1766386672242.png" width="300">
-
-<img src="memes/meme-1766386683921.png" width="300">
-
-<img src="memes/meme-1768377642085.png" width="300">
-
-<img src="memes/meme-1768377670282.png" width="300">
-
-<img src="memes/meme-1768377677814.png" width="300">
-
-<img src="memes/meme-1768377687219.png" width="300">
-
-<img src="memes/meme-1768377695337.png" width="300">
-
-<img src="memes/meme-1768377701832.png" width="300">
-
-<img src="memes/meme-1769499554346.png" width="300">
-
-<img src="memes/meme-1769499565606.png" width="300">
-
-<img src="memes/meme-1771399250188.png" width="300">
-
-<img src="memes/meme-1771399262915.png" width="300">
-
-<img src="memes/meme-1771399277335.png" width="300">
-
-<img src="memes/meme-1765627818137.jpeg" width="300">
-

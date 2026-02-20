@@ -27,23 +27,22 @@ jobs:
         with:
           ref: main
 
-      - name: Generate README
+      - name: Generate images.json
         run: |
-          echo "# Collection of memes" > README.md
-          echo "" >> README.md
-          echo "https://camilleislasse.github.io/memes" >> README.md
-          echo "" >> README.md
+          echo "[" > images.json
+          first=true
           for img in memes/*.{png,jpg,jpeg,gif,webp}; do
             if [ -f "$img" ]; then
-              echo "<img src=\"$img\" width=\"300\">" >> README.md
-              echo "" >> README.md
+              [ "$first" = true ] && first=false || echo "," >> images.json
+              echo "  \"$img\"" >> images.json
             fi
           done
+          echo "]" >> images.json
 
-      - name: Commit changes
+      - name: Commit
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add README.md
-          git diff --quiet && git diff --staged --quiet || git commit -m "update readme"
+          git add images.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "update images.json"
           git push
