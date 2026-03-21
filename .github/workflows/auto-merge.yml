@@ -27,23 +27,24 @@ jobs:
         with:
           ref: main
 
-      - name: Generate images.json
-        run: |
-          echo "[" > images.json
-          first=true
-          for img in memes/*.{png,jpg,jpeg,gif,webp}; do
-            if [ -f "$img" ]; then
-              [ "$first" = true ] && first=false || echo "," >> images.json
-              echo "  \"$img\"" >> images.json
-            fi
-          done
-          echo "]" >> images.json
-
-      - name: Commit
+      - name: Update images.json
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add images.json
-          git diff --quiet && git diff --staged --quiet || git commit -m "update images.json"
-          git pull --rebase origin main
-          git push
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            echo "[" > images.json
+            first=true
+            for img in memes/*.{png,jpg,jpeg,gif,webp}; do
+              if [ -f "$img" ]; then
+                [ "$first" = true ] && first=false || echo "," >> images.json
+                echo "  \"$img\"" >> images.json
+              fi
+            done
+            echo "]" >> images.json
+            git add images.json
+            git diff --staged --quiet && break
+            git commit -m "update images.json"
+            git push && break || git reset --soft HEAD~1
+          done
