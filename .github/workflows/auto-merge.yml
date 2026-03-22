@@ -11,6 +11,7 @@ permissions:
 jobs:
   auto-merge:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'camilleislasse'
     steps:
       - name: Merge PR
         uses: actions/github-script@v7
@@ -27,13 +28,14 @@ jobs:
         with:
           ref: main
 
-      - name: Update images.json
+      - name: Update images.json and README
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           for i in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
+
             echo "[" > images.json
             first=true
             for img in memes/*.{png,jpg,jpeg,gif,webp}; do
@@ -43,8 +45,11 @@ jobs:
               fi
             done
             echo "]" >> images.json
-            git add images.json
+
+            python3 .github/generate_readme.py
+
+            git add images.json README.md
             git diff --staged --quiet && break
-            git commit -m "update images.json"
+            git commit -m "chore: add meme"
             git push && break || git reset --soft HEAD~1
           done
