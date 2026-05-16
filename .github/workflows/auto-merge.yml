@@ -3,15 +3,20 @@ name: Auto Merge
 on:
   pull_request:
     types: [opened]
+  push:
+    branches: [main]
+    paths:
+      - 'memes/**'
+  workflow_dispatch:
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  auto-merge:
+  merge:
+    if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'camilleislasse'
     runs-on: ubuntu-latest
-    if: github.event.pull_request.user.login == 'camilleislasse'
     steps:
       - name: Merge PR
         uses: actions/github-script@v7
@@ -24,6 +29,11 @@ jobs:
               merge_method: 'squash'
             });
 
+  update-gallery:
+    needs: [merge]
+    if: always() && (github.event_name != 'pull_request' || needs.merge.result == 'success')
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v4
         with:
           ref: main
@@ -50,6 +60,6 @@ jobs:
 
             git add images.json README.md
             git diff --staged --quiet && break
-            git commit -m "chore: add meme"
+            git commit -m "chore: update gallery"
             git push && break || git reset --soft HEAD~1
           done
