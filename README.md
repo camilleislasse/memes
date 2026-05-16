@@ -1,7 +1,7 @@
 <table>
   <tr>
     <td><img src="memes/meme-1765627818137.jpeg" width="200"/></td>
-    <td><img src="memes/ai-meme.jpg" width="200"/></td>
+    <td><img src="memes/meme-1778941630896.jpg" width="200"/></td>
     <td><img src="memes/meme-1774072188566.png" width="200"/></td>
     <td><img src="memes/meme-1774071953624.png" width="200"/></td>
   </tr>

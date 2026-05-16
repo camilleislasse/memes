@@ -46,6 +46,19 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
+            ts=$(date +%s%3N)
+            counter=0
+            for img in memes/*.{png,jpg,jpeg,gif,webp,PNG,JPG,JPEG,GIF,WEBP}; do
+              [ -f "$img" ] || continue
+              base=$(basename "$img")
+              ext_lower=$(echo "${base##*.}" | tr '[:upper:]' '[:lower:]')
+              if ! [[ "$base" =~ ^meme-[0-9]+\.(png|jpg|jpeg|gif|webp)$ ]]; then
+                new="memes/meme-$((ts + counter)).$ext_lower"
+                git mv "$img" "$new"
+                counter=$((counter + 1))
+              fi
+            done
+
             echo "[" > images.json
             first=true
             for img in memes/*.{png,jpg,jpeg,gif,webp}; do
@@ -58,7 +71,7 @@ jobs:
 
             python3 .github/generate_readme.py
 
-            git add images.json README.md
+            git add -A memes/ images.json README.md
             git diff --staged --quiet && break
             git commit -m "chore: update gallery"
             git push && break || git reset --soft HEAD~1
