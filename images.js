@@ -59,5 +59,6 @@ window.MEMES = [
   "memes/meme-1791909002411.webp",
   "memes/meme-1791909002412.webp",
   "memes/meme-1792268964847.webp",
-  "memes/meme-1792268964848.webp"
+  "memes/meme-1792268964848.webp",
+  "memes/meme-1795370676786.webp"
 ];
