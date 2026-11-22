@@ -79,7 +79,7 @@ jobs:
 
             python3 .github/generate_readme.py
 
-            git add -A memes/ images.json README.md
+            git add -A memes/ images.json images.js README.md
             git diff --staged --quiet && break
             git commit -m "chore: update gallery"
             git push && break || git reset --soft HEAD~1

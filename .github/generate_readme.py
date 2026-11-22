@@ -3,6 +3,9 @@ import json
 with open('images.json') as f:
     images = json.load(f)
 
+with open('images.js', 'w') as f:
+    f.write('window.MEMES = ' + json.dumps(images, indent=2) + ';\n')
+
 images = list(reversed(images))
 cols = 4
 rows = [images[i:i+cols] for i in range(0, len(images), cols)]

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Memes</title>
+  <link rel="icon" href="data:,">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; background: #111; color: #eee; }
+    h1 { text-align: center; margin: 1rem 0; font-size: 1.5rem; }
+    .carousel { display: flex; justify-content: center; align-items: center; min-height: 40vh; padding: 0 1rem; touch-action: pan-y; }
+    .carousel img { max-width: 100%; max-height: 70vh; max-height: 70svh; object-fit: contain; }
+    .controls { display: flex; justify-content: center; align-items: center; gap: .75rem; margin: 1rem 0 2rem; }
+    .controls button { background: #333; color: #eee; border: 0; border-radius: 6px; cursor: pointer; padding: .5rem .9rem; font-size: 1rem; }
+    .controls button:hover { background: #444; }
+    .controls .arrow { font-size: 1.5rem; line-height: 1; padding: .3rem .9rem; }
+    #counter { min-width: 4.5em; text-align: center; font-variant-numeric: tabular-nums; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: .5rem; padding: 0 1rem 2rem; }
+    .grid img { width: 100%; aspect-ratio: 1; object-fit: cover; cursor: pointer; border-radius: 4px; opacity: .8; background: #222; }
+    .grid img:hover, .grid img.active { opacity: 1; outline: 3px solid #4af; }
+    @media (max-width: 600px) {
+      h1 { margin: .75rem 0; }
+      .carousel { padding: 0 .5rem; }
+      .grid { grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 0 4px 1rem; }
+      .grid img { border-radius: 2px; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Memes</h1>
+
+  <div class="carousel"><img id="current" alt="" fetchpriority="high"></div>
+  <div class="controls">
+    <button class="arrow" id="prev" aria-label="Précédent">‹</button>
+    <span id="counter"></span>
+    <button class="arrow" id="next" aria-label="Suivant">›</button>
+    <button id="random">Au hasard</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <script src="images.js"></script>
+  <script>
+    const ts = path => Number(path.match(/meme-(\d+)/)?.[1] ?? 0);
+    const memes = (window.MEMES || []).slice().sort((a, b) => ts(b) - ts(a)); // newest first
+    const current = document.getElementById('current');
+    const thumbs = [];
+    let index = 0;
+
+    function show(i) {
+      if (!memes.length) return;
+      thumbs[index]?.classList.remove('active');
+      index = (i + memes.length) % memes.length;
+      current.src = memes[index];
+      thumbs[index].classList.add('active');
+      document.getElementById('counter').textContent = `${index + 1} / ${memes.length}`;
+      history.replaceState(null, '', `#${index + 1}`);
+      // Preload neighbours so navigation feels instant.
+      [index + 1, index - 1].forEach(j => { new Image().src = memes[(j + memes.length) % memes.length]; });
+    }
+
+    const grid = document.getElementById('grid');
+    memes.forEach((path, i) => {
+      const img = document.createElement('img');
+      img.loading = 'lazy'; img.decoding = 'async'; img.alt = '';
+      img.src = path;
+      img.onclick = () => { show(i); scrollTo({ top: 0, behavior: 'smooth' }); };
+      thumbs.push(img);
+      grid.appendChild(img);
+    });
+    show((parseInt(location.hash.slice(1)) || 1) - 1);
+
+    document.getElementById('prev').onclick = () => show(index - 1);
+    document.getElementById('next').onclick = () => show(index + 1);
+    document.getElementById('random').onclick = () => show(Math.floor(Math.random() * memes.length));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') show(index - 1);
+      if (e.key === 'ArrowRight') show(index + 1);
+    });
+
+    let startX = null;
+    const carousel = document.querySelector('.carousel');
+    carousel.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+    carousel.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 50) show(index + (dx < 0 ? 1 : -1));
+    });
+  </script>
+</body>
+</html>
