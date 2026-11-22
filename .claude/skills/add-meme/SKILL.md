@@ -5,7 +5,7 @@ description: Add one or more memes to the repo gallery (images pasted in the con
 
 # Add memes
 
-The gallery is generated automatically: a push to `main` touching `memes/` runs `.github/workflows/auto-merge.yml`, which renames badly named files, converts images to WebP (`.github/optimize_images.py`) and regenerates `images.json`, `images.js` and `README.md` ("chore: update gallery" commit). Never edit `README.md`, `images.json` or `images.js` by hand.
+The gallery is generated automatically: a push to `main` touching `memes/` runs `.github/workflows/auto-merge.yml`, which renames badly named files, converts images to WebP (`.github/optimize_images.py`) and regenerates `images.json` and `images.js`, which feed the GitHub Page (`index.html`) ("chore: update gallery" commit). Never edit `images.json` or `images.js` by hand.
 
 ## Steps
 
