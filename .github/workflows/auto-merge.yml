@@ -38,6 +38,12 @@ jobs:
         with:
           ref: main
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install pillow==11.3.0
+
       - name: Update images.json and README
         run: |
           git config --local user.email "action@github.com"
@@ -58,6 +64,8 @@ jobs:
                 counter=$((counter + 1))
               fi
             done
+
+            python3 .github/optimize_images.py
 
             echo "[" > images.json
             first=true
